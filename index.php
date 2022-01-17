@@ -37,7 +37,78 @@
         echo 'La valeur de la variable x est : '.$x.'<br>';
     }
 
-    test1();
-    test2();
+    /* Meme si j'appelle plusieurs fois ma fonction test3(), le résultat est toujours 1. En effet, la variable $y est détruite dès la fin de l'exécution de ma fonction. A nouveau quand j'appelle ma fonction elle est réinitialisé à 0 tel que je l'ai définie dans ma fonction. $y est une sorte de variable "jettable" : je l'utilise dans ma fonction et puis je la jette (elle n'existe plus). 
+    */
+    function test3(){
+        $y = 0;
+        $y++;
+        echo '$y contient la valeur : ' .$y. '<br>';
+    }
+    // En effet mon echo ici me renvoie "undefinied variable, $y n'existe que localement à l'intérieure de ma fonction test3();
+    echo $y;
 
+    function test4(){
+        $z = 'coucou';
+        //echo $z;
+    }
+
+    test1();
+    test1bis();
+    test2();
+    test3();
+    test3();
+    test3();
+    
+    // Ici $z existe.
+    test4();
+
+    // $z est déclaré dans un contexte local, elle n'existe donc pas dans un contexte global
+    echo 'La valeur de la variable $z contient '.$z. '<br>';
+
+    /* Tout ce qu'on vient de voir jusque là est le comportement par défaut.
+    Nous pouvons en fonction de nos besoins, modifier ce comportement. 
+    Par exemple, nous pourrions avoir besoin d'utiliser une variable yant une portée globale à l'intérieur d'une fonction.
+
+    Pour réaliser cela, nous allons utiliser le mot clef global avant la déclaration des variables que nous souhaitons utiliser dans notre fonction. En résumé, utiliser global nous permet d'indiquer à php que les variables déclarées dans la fonction sont en fait des variables globales. En terme pur informatique, on dit les variables globales ont été importées dans le contexte local de référence. 
+    */
+    $x = 25;
+
+    function porteeGlobal(){
+        global $x ;
+        echo 'La valeur de $x global est : '.$x.'<br>';
+        $x = $x+5;
+        echo 'La nouvelle valeur de $x est '.$x.'<br>';
+    }
+
+    porteeGlobal();
+
+    /*
+    A l'inverse avoir accès dans un contexte global à une variable locale nécessite d'utiliser dans mon contexte local (donc ma fonction) le return afin que ma fonction me renvoie la valeur de ma variable locale. Ensuite je vais stocker ça dans une variable globale afin de pouvoir l'utiliser dans un contexte global.
+    */
+    function fromLocaltoGlobal(){
+        $z = "toto";
+        return $z;
+    }
+
+    $ab = fromLocaltoGlobal();
+
+    echo $ab ;
+
+    /* 
+    On sait que une variable locale (donc à l'intérieur déclarée l'intérieur d'une fonction) est DETRUITE à la fin de l'exécution de cette fonction. 
+    OR, il arrive que nous souhaitions CONSERVER notre variable locale afin de l'utiliser dans d'autres contextes LOCAUX. Pour faire en sorte que la fonction (= le contexte local) se souvienne de la valeur de la variable, nous allons utiliser le mot-clef static.
+    */
+
+    function compteur(){
+        static $y = 0;
+        $y++;
+        echo 'La valeur de $y est '.$y. '<br>';
+    }
+
+    // Ici $y est égal à 1
+    compteur();
+    // Au 2eme appel de ma fonction, elle se "souvient" grâce à l'utilisation du mot-clef static, de la dernière valeur de $y et utilise cette dernière valeur. Donc ici $y est égal à 2;
+    compteur();
+    // Idem, même logique donc ici $y est égal à 3;
+    compteur();
 ?>
